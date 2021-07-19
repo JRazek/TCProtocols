@@ -12,11 +12,7 @@ byte *TransferObjectData::encode(const byte *dataRaw, const u_int64_t dataSize) 
     }
 
     std::copy(dataRaw, dataRaw + dataSize, data + metaDataBytesSize);
-//todo remove
-    std::vector<byte> tmp;
-    for(int i = 0; i < dataSize + metaDataBytesSize; i ++){
-        tmp.push_back(data[i]);
-    }
+
     return data;
 }
 
