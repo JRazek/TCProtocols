@@ -28,16 +28,21 @@ u_short TCPClient::connect() {
     }
     return 0;
 }
-
-u_short TCPClient::sendData(const std::vector<byte> &data) {
-    byte *dataFormatted = TransferObjectData::encode(data.data(), data.size());
-    u_int64_t formattedDataSize = data.size() + TransferObjectData::metaDataBytesSize;
+u_short TCPClient::sendData(const byte *bytes, u_int64_t size) {
+    byte *dataFormatted = TransferObjectData::encode(bytes, size);
+    u_int64_t formattedDataSize = size + TransferObjectData::metaDataBytesSize;
 
     send(sock, dataFormatted, formattedDataSize, 0);
     delete [] dataFormatted;
     return 0;
 }
 
+u_short TCPClient::sendData(const std::vector<byte> &data) {
+    return this->sendData(data.data(), data.size());
+}
+
 void TCPClient::connClose() {
     close(sock);
 }
+
+
