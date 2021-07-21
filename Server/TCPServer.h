@@ -24,6 +24,7 @@ private:
 
 public:
     /**
+     * 
      * initializes data
      * port for listening and buffer size for receiving data in readData()
      * */
@@ -58,6 +59,7 @@ public:
      * @return packets that are pending from client
     */
    u_short getPacketsPendingCount();
+    
     
 };
 

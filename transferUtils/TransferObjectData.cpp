@@ -10,8 +10,19 @@ byte *TransferObjectData::encode(const byte *dataRaw, const u_int64_t dataSize) 
     for(int i = 0; i < metaDataBytesSize; i ++){
         data[i] = (dataSize >> metaDataBytesSize * (7 - i));
     }
+    //TODO switch to encodeDataLength
 
     std::copy(dataRaw, dataRaw + dataSize, data + metaDataBytesSize);
+
+    return data;
+}
+
+byte *TransferObjectData::encodeDataLength(const u_int64_t dataLength){
+    byte *data = new byte [dataLength + metaDataBytesSize];
+
+    for(int i = 0; i < metaDataBytesSize; i ++){
+        data[i] = (dataLength >> metaDataBytesSize * (7 - i));
+    }
 
     return data;
 }

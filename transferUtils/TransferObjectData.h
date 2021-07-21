@@ -17,6 +17,7 @@ struct TransferObjectData {
     static std::pair<u_int64_t, byte *> decode(const byte *objectEncoded);
     static byte *encode(const byte *dataRaw, const u_int64_t dataSize);
     static u_int64_t decodeDataLength(const byte *metaData);
+    static byte *encodeDataLength(const u_int64_t dataLength);
 };
 
 

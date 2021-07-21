@@ -46,3 +46,6 @@ void TCPClient::connClose() {
 }
 
 
+u_short TCPClient::sendPacketsMetaData(u_short packetsCound){
+    
+}
