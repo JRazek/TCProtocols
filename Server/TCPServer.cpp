@@ -37,7 +37,7 @@ TCPServer::TCPServer(u_short port, u_short BUFFER_SIZE):port(port), BUFFER_SIZE(
     }
 }
 
-u_short TCPServer::listen(u_short clientsPendingCount) const {
+int TCPServer::listen(u_short clientsPendingCount) const {
     if (::listen(server_fd, clientsPendingCount) < 0){
         perror("listen");
         return -1;
@@ -45,7 +45,7 @@ u_short TCPServer::listen(u_short clientsPendingCount) const {
     return 0;
 }
 
-u_short TCPServer::accept() {
+int TCPServer::accept() {
     int addrLen = sizeof(address);
     if ((new_socket = ::accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrLen))<0){
         perror("accept");
@@ -56,37 +56,69 @@ u_short TCPServer::accept() {
 }
 
 
+std::pair<int , std::vector<byte>> TCPServer::readPacket() {
+    this->readPacketsMetadata();
+    if(this->packetsPendingCount) {
+        byte buffer[this->BUFFER_SIZE];
 
-std::pair<u_short , std::vector<byte>> TCPServer::readPacket() {
-    byte buffer[this->BUFFER_SIZE];
+        byte packetMetaData[TransferObjectData::metaDataBytesSize];
 
+        int status = read(new_socket, &packetMetaData, sizeof(packetMetaData));
+        if (status < 0)
+            return {status, {}};
 
-    byte packetMetaData[TransferObjectData::metaDataBytesSize];
+        u_int64_t expectedDataSize = TransferObjectData::decodeDataLength(packetMetaData);
 
-    int status = read(new_socket, &packetMetaData, sizeof(packetMetaData));
-    if(status < 0)
-        return {-1, {}};
+        std::vector<byte> bytesVector;
 
-    u_int64_t expectedDataSize = TransferObjectData::decodeDataLength(packetMetaData);
+        u_int64_t dataReceived = 0;
+        u_int64_t requestedData = BUFFER_SIZE < expectedDataSize - dataReceived ? BUFFER_SIZE : expectedDataSize;
 
-    std::vector<byte> bytesVector;
-
-    u_int64_t dataReceived = 0;
-    u_int64_t requestedData = BUFFER_SIZE < expectedDataSize - dataReceived ? BUFFER_SIZE : expectedDataSize;
-
-    while(int packet = read( new_socket, buffer, requestedData) ){
-        dataReceived += packet;
-        requestedData = BUFFER_SIZE < (expectedDataSize - dataReceived) ? BUFFER_SIZE : expectedDataSize - dataReceived;
-        if(packet < 1)
-            break;
-        bytesVector.insert(bytesVector.end(), buffer, buffer + packet);
-        if(!requestedData)
-            break;
+        while (int packet = read(new_socket, buffer, requestedData)) {
+            dataReceived += packet;
+            requestedData =
+                    BUFFER_SIZE < (expectedDataSize - dataReceived) ? BUFFER_SIZE : expectedDataSize - dataReceived;
+            if (packet < 1)
+                break;
+            bytesVector.insert(bytesVector.end(), buffer, buffer + packet);
+            if (!requestedData)
+                break;
+        }
+        this->packetsPendingCount --;
+        return {0, bytesVector};
     }
-
-    return {0, bytesVector};
+    return {-1, {}};
 }
 
 u_short TCPServer::getPacketsPendingCount(){
     return this->packetsPendingCount;
+}
+
+std::pair<int, std::vector<std::vector<byte>>> TCPServer::readPacketsAll() {
+    std::pair<int, std::vector<std::vector<byte>>> result;
+    result.second.reserve(this->packetsPendingCount);
+    while (this->packetsPendingCount){
+        auto tmpRes = this->readPacket();
+        if(!tmpRes.first){
+            result.first = tmpRes.first;
+            return result;
+        }
+        result.second.push_back(tmpRes.second);
+    }
+    return result;
+}
+
+int TCPServer::readPacketsMetadata() {
+    byte expectedPacketsMetaData[TransferObjectData::metaDataBytesSize];
+    if(!this->packetsPendingCount){
+        int status = read(new_socket, expectedPacketsMetaData, sizeof(expectedPacketsMetaData));
+        this->packetsPendingCount = TransferObjectData::decodeDataLength(expectedPacketsMetaData);
+
+        if(status < 0){
+            return status;
+        }
+    } else{
+        return -2;
+    }
+    return 0;
 }

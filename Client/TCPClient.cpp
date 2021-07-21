@@ -21,24 +21,26 @@ TCPClient::TCPClient(const char *addr, u_short port) {
 
 }
 
-u_short TCPClient::connect() {
+int TCPClient::connect() {
     if (::connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0){
         printf("\nConnection Failed \n");
         return -1;
     }
     return 0;
 }
-u_short TCPClient::sendData(const byte *bytes, u_int64_t size) {
+int TCPClient::sendPacket(const byte *bytes, u_int64_t size) {
     byte *dataFormatted = TransferObjectData::encode(bytes, size);
     u_int64_t formattedDataSize = size + TransferObjectData::metaDataBytesSize;
 
-    send(sock, dataFormatted, formattedDataSize, 0);
+    if(sendDataRaw(dataFormatted, formattedDataSize) == -1){
+        return -1;
+    }
     delete [] dataFormatted;
     return 0;
 }
 
-u_short TCPClient::sendData(const std::vector<byte> &data) {
-    return this->sendData(data.data(), data.size());
+int TCPClient::sendPacket(const std::vector<byte> &data) {
+    return this->sendPacket(data.data(), data.size());
 }
 
 void TCPClient::connClose() {
@@ -46,6 +48,14 @@ void TCPClient::connClose() {
 }
 
 
-u_short TCPClient::sendPacketsMetaData(u_short packetsCount){
-    return 0;
+int TCPClient::sendPacketsMetaData(u_short packetsCount){
+    byte *metaData = TransferObjectData::encodeDataLength(packetsCount);
+    u_short result = sendDataRaw(metaData, TransferObjectData::metaDataBytesSize);
+
+    delete [] metaData;
+    return result;
+}
+
+int TCPClient::sendDataRaw(const byte *data, u_int64_t dataSize) {
+    return send(sock, data, dataSize, 0);
 }

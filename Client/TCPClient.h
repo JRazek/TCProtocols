@@ -14,13 +14,16 @@ class TCPClient {
 private:
     int sock;
     sockaddr_in serv_addr;
+
+    int sendDataRaw(const byte *data, u_int64_t dataSize);
+
 public:
     TCPClient(const char *addr, u_short port);
-    u_short connect();
+    int connect();
 
-    u_short sendPacketsMetaData(u_short packetsCount);
-    u_short sendData(const std::vector<byte> &data);
-    u_short sendData(const byte *bytes, u_int64_t size);
+    int sendPacketsMetaData(u_short packetsCount);
+    int sendPacket(const std::vector<byte> &data);
+    int sendPacket(const byte *bytes, u_int64_t size);
     void connClose();
 };
 

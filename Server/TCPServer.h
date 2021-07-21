@@ -36,7 +36,7 @@ public:
      * @return  0 if successful, otherwise error code
      * reserves the port specified in constructor, starts listening on that port
      */
-    u_short listen(u_short clientsPendingCount = 5) const;
+    int listen(u_short clientsPendingCount = 5) const;
 
 
     /**
@@ -44,14 +44,29 @@ public:
      * @return 0 if successful, otherwise error code
      * waits for any connection request.
      */
-    u_short accept();
+    int accept();
 
 
     /**
      *
-     * @return pair of <0 if successful otherwise error code, vector of data received from single encoded packet>
+     * @return reads packets header from client. Runs automatically with @readPacket()
      */
-    std::pair<u_short , std::vector<byte>> readPacket();
+    int readPacketsMetadata();
+
+
+    /**
+     * @name readPacket()
+     * @return pair of status code and vector containing packet data.
+     */
+    std::pair<int, std::vector<byte>> readPacket();
+
+
+    /**
+     *
+     * @return pair of status code, and vector of vectors that contain all the packets read @readPacket() for more
+     */
+
+    std::pair<int, std::vector<std::vector<byte>>> readPacketsAll();
 
 
     /**
