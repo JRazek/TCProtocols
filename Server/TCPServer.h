@@ -63,6 +63,7 @@ public:
     /**
      *
      * @return pair of status code, and vector of vectors that contain all the packets read @readPacket() for more
+     * note that this function is not recommended to use with big packet sizes.
      */
 
     std::pair<int, std::vector<std::vector<byte>>> readPacketsAll();

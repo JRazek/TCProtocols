@@ -58,5 +58,5 @@ int TCPClient::sendPacketsMetaData(u_short packetsCount){
 }
 
 int TCPClient::sendDataRaw(const byte *data, u_int64_t dataSize) {
-    return send(sock, data, dataSize, MSG_DONTWAIT | 0);
+    return send(sock, data, dataSize, 0);
 }

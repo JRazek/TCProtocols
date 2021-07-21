@@ -75,7 +75,7 @@ std::pair<int , std::vector<byte>> TCPServer::readPacket() {
         u_int64_t requestedData = BUFFER_SIZE < expectedDataSize - dataReceived ? BUFFER_SIZE : expectedDataSize;
 
         byte buffer[this->BUFFER_SIZE];
-        while (int packet = recv(new_socket, &buffer, requestedData, MSG_DONTWAIT | 0)) {
+        while (int packet = recv(new_socket, &buffer, requestedData, 0)) {
             dataReceived += packet;
             requestedData = BUFFER_SIZE < (expectedDataSize - dataReceived) ? BUFFER_SIZE : expectedDataSize - dataReceived;
             if (packet < 1)
