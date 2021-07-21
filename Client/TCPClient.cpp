@@ -33,6 +33,7 @@ int TCPClient::sendPacket(const byte *bytes, u_int64_t size) {
     u_int64_t formattedDataSize = size + TransferObjectData::metaDataBytesSize;
 
     if(sendDataRaw(dataFormatted, formattedDataSize) == -1){
+        delete [] dataFormatted;
         return -1;
     }
     delete [] dataFormatted;
@@ -57,5 +58,5 @@ int TCPClient::sendPacketsMetaData(u_short packetsCount){
 }
 
 int TCPClient::sendDataRaw(const byte *data, u_int64_t dataSize) {
-    return send(sock, data, dataSize, 0);
+    return send(sock, data, dataSize, MSG_DONTWAIT | 0);
 }

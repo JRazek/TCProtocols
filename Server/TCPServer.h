@@ -14,8 +14,7 @@ class TCPServer {
 private:
     const u_short port;
     bool socketReady;
-    const u_short BUFFER_SIZE = 8192;
-    const u_short transferObjectMETADATASize = 8;
+    const size_t BUFFER_SIZE = 600000;
     u_short constructorError;
     sockaddr_in address;
     int server_fd, new_socket;
@@ -28,7 +27,7 @@ public:
      * initializes data
      * port for listening and buffer size for receiving data in readData()
      * */
-    TCPServer(u_short port, u_short BUFFER_SIZE);
+    TCPServer(u_short port, size_t BUFFER_SIZE);
 
 
     /**

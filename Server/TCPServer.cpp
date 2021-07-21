@@ -9,7 +9,7 @@
 #include "TCPServer.h"
 #include "../transferUtils/TransferObjectData.h"
 //todo rsa crypt
-TCPServer::TCPServer(u_short port, u_short BUFFER_SIZE):port(port), BUFFER_SIZE(BUFFER_SIZE) {
+TCPServer::TCPServer(u_short port, size_t BUFFER_SIZE): port(port), BUFFER_SIZE(BUFFER_SIZE) {
     this->socketReady = false;
     this->packetsPendingCount = 0;
     int opt = 1;
@@ -60,7 +60,6 @@ int TCPServer::accept() {
 std::pair<int , std::vector<byte>> TCPServer::readPacket() {
     this->readPacketsMetadata();
     if(this->packetsPendingCount) {
-        byte buffer[this->BUFFER_SIZE];
 
         byte packetMetaData[TransferObjectData::metaDataBytesSize];
 
@@ -75,10 +74,10 @@ std::pair<int , std::vector<byte>> TCPServer::readPacket() {
         u_int64_t dataReceived = 0;
         u_int64_t requestedData = BUFFER_SIZE < expectedDataSize - dataReceived ? BUFFER_SIZE : expectedDataSize;
 
-        while (int packet = read(new_socket, buffer, requestedData)) {
+        byte buffer[this->BUFFER_SIZE];
+        while (int packet = recv(new_socket, &buffer, requestedData, MSG_DONTWAIT | 0)) {
             dataReceived += packet;
-            requestedData =
-                    BUFFER_SIZE < (expectedDataSize - dataReceived) ? BUFFER_SIZE : expectedDataSize - dataReceived;
+            requestedData = BUFFER_SIZE < (expectedDataSize - dataReceived) ? BUFFER_SIZE : expectedDataSize - dataReceived;
             if (packet < 1)
                 break;
             bytesVector.insert(bytesVector.end(), buffer, buffer + packet);
