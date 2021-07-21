@@ -11,6 +11,7 @@
 //todo rsa crypt
 TCPServer::TCPServer(u_short port, u_short BUFFER_SIZE):port(port), BUFFER_SIZE(BUFFER_SIZE) {
     this->socketReady = false;
+    this->packetsPendingCount = 0;
     int opt = 1;
 
     this->address = {};
@@ -95,11 +96,12 @@ u_short TCPServer::getPacketsPendingCount(){
 }
 
 std::pair<int, std::vector<std::vector<byte>>> TCPServer::readPacketsAll() {
+    this->readPacketsMetadata();
     std::pair<int, std::vector<std::vector<byte>>> result;
     result.second.reserve(this->packetsPendingCount);
     while (this->packetsPendingCount){
         auto tmpRes = this->readPacket();
-        if(!tmpRes.first){
+        if(tmpRes.first < 0){
             result.first = tmpRes.first;
             return result;
         }
@@ -109,8 +111,8 @@ std::pair<int, std::vector<std::vector<byte>>> TCPServer::readPacketsAll() {
 }
 
 int TCPServer::readPacketsMetadata() {
-    byte expectedPacketsMetaData[TransferObjectData::metaDataBytesSize];
     if(!this->packetsPendingCount){
+        byte expectedPacketsMetaData[TransferObjectData::metaDataBytesSize];
         int status = read(new_socket, expectedPacketsMetaData, sizeof(expectedPacketsMetaData));
         this->packetsPendingCount = TransferObjectData::decodeDataLength(expectedPacketsMetaData);
 

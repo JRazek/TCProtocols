@@ -5,3 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_library(TCProtocols STATIC Server/TCPServer.cpp Server/TCPServer.h transferUtils/TransferObjectData.cpp transferUtils/TransferObjectData.h Client/TCPClient.cpp Client/TCPClient.h)
 
+add_executable(TEST main.cpp main.cpp)
+
+target_link_libraries(TEST TCProtocols)
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
