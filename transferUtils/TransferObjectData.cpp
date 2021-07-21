@@ -5,23 +5,25 @@
 #include "TransferObjectData.h"
 
 byte *TransferObjectData::encode(const byte *dataRaw, const u_int64_t dataSize) {
+    byte *metaData = encodeDataLength(dataSize);
     byte *data = new byte [dataSize + metaDataBytesSize];
+
+    std::copy(metaData, metaData + metaDataBytesSize, data);
+    delete [] metaData;
 
     for(int i = 0; i < metaDataBytesSize; i ++){
         data[i] = (dataSize >> metaDataBytesSize * (7 - i));
     }
-    //TODO switch to encodeDataLength
 
     std::copy(dataRaw, dataRaw + dataSize, data + metaDataBytesSize);
-
     return data;
 }
 
-byte *TransferObjectData::encodeDataLength(const u_int64_t dataLength){
-    byte *data = new byte [dataLength + metaDataBytesSize];
+byte *TransferObjectData::encodeDataLength(const u_int64_t dataSize){
+    byte *data = new byte [dataSize + metaDataBytesSize];
 
     for(int i = 0; i < metaDataBytesSize; i ++){
-        data[i] = (dataLength >> metaDataBytesSize * (7 - i));
+        data[i] = (dataSize >> metaDataBytesSize * (7 - i));
     }
 
     return data;

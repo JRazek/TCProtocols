@@ -37,8 +37,8 @@ TCPServer::TCPServer(u_short port, u_short BUFFER_SIZE):port(port), BUFFER_SIZE(
     }
 }
 
-u_short TCPServer::listen() const {
-    if (::listen(server_fd, 3) < 0){
+u_short TCPServer::listen(u_short clientsPendingCount) const {
+    if (::listen(server_fd, clientsPendingCount) < 0){
         perror("listen");
         return -1;
     }

@@ -36,7 +36,7 @@ public:
      * @return  0 if successful, otherwise error code
      * reserves the port specified in constructor, starts listening on that port
      */
-    u_short listen() const;
+    u_short listen(u_short clientsPendingCount = 5) const;
 
 
     /**
