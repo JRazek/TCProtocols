@@ -87,3 +87,6 @@ std::pair<u_short , std::vector<byte>> TCPServer::readPacket() {
     return {0, bytesVector};
 }
 
+u_short TCPServer::getPacketsPendingCount(){
+    return this->packetsPendingCount;
+}

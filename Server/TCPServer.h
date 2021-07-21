@@ -20,6 +20,7 @@ private:
     sockaddr_in address;
     int server_fd, new_socket;
 
+    u_short packetsPendingCount;
 
 public:
     /**
@@ -51,6 +52,13 @@ public:
      */
     std::pair<u_short , std::vector<byte>> readPacket();
 
+
+    /**
+     * 
+     * @return packets that are pending from client
+    */
+   u_short getPacketsPendingCount();
+    
 };
 
 
