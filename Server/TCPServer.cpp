@@ -14,7 +14,6 @@ TCPServer::TCPServer(u_short port, size_t BUFFER_SIZE): port(port), BUFFER_SIZE(
     this->packetsPendingCount = 0;
     int opt = 1;
 
-    this->address = {};
     if ((this->server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0){
         perror("socket failed");
         this->constructorError = 301;
@@ -27,6 +26,7 @@ TCPServer::TCPServer(u_short port, size_t BUFFER_SIZE): port(port), BUFFER_SIZE(
         this->constructorError = 302;
         return;
     }
+    this->address = {};
     this->address.sin_family = AF_INET;
     this->address.sin_addr.s_addr = INADDR_ANY;
     this->address.sin_port = htons( port );
@@ -122,4 +122,16 @@ int TCPServer::readPacketsMetadata() {
         return -2;
     }
     return 0;
+}
+
+int TCPServer::killSocket(int socket_fd) {
+    return shutdown(socket_fd, SHUT_RDWR);
+}
+
+std::string TCPServer::getClientsIp(sockaddr_in sockAddrIn) {
+    return inet_ntoa(sockAddrIn.sin_addr);
+}
+
+std::string TCPServer::getClientsPort(sockaddr_in sockAddrIn) {
+    return std::string();
 }

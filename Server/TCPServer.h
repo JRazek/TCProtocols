@@ -6,7 +6,7 @@
 #define OPENCV_TCPSERVER_H
 #include <vector>
 #include <netinet/in.h>
-
+#include <unordered_map>
 typedef unsigned short u_short;
 typedef unsigned char byte;
 
@@ -24,7 +24,7 @@ private:
 public:
     /**
      * 
-     * initializes data
+     * initializes data, binds port
      * port for listening and buffer size for receiving data in readData()
      * */
     TCPServer(u_short port, size_t BUFFER_SIZE);
@@ -52,6 +52,13 @@ public:
      */
     int readPacketsMetadata();
 
+
+    int killSocket(int socket_fd);
+
+
+    std::string getClientsIp(sockaddr_in sockAddrIn);
+
+    std::string getClientsPort(sockaddr_in sockAddrIn);
 
     /**
      * @name readPacket()

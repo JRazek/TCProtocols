@@ -38,10 +38,12 @@ int main(){
 
     accept.get();
 
+  //  std::string s = tcpServer.getClientsIp(tcpServer.address);
+
     tcpClient.sendPacketsMetaData(PACKETS_COUNT);
     tcpServer.readPacketsMetadata();
 
-    std::future<decltype(tcpServer.readPacket())> fut = std::async(&TCPServer::readPacket, &tcpServer);
+    std::future<decltype(tcpServer.readPacketsAll())> fut = std::async(&TCPServer::readPacketsAll, &tcpServer);
 
     for(int i = 0; i < PACKETS_COUNT; i ++) {
         tcpClient.sendPacket(bytes);
