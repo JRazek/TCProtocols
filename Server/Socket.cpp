@@ -4,26 +4,24 @@
 
 #include <cstdio>
 #include "Socket.h"
+#include "../transferUtils/TransferObjectData.h"
 
-Socket::Socket(u_short PORT) : port(PORT) {
-    int opt = 1;
-    if ((this->serverFileDescriptor = socket(AF_INET, SOCK_STREAM, 0)) == 0){
-        perror("socket failed");
-        return;
+Socket::Socket(int id, int sockData, size_t BUFFER_SIZE) :id(id), BUFFER_SIZE(BUFFER_SIZE) {
+    this->sockData = sockData;
+    this->pendingPacketsCount = 0;
+}
+
+int Socket::readPacketsHeader() {
+    if(!this->pendingPacketsCount){
+        byte expectedPacketsMetaData[TransferObjectData::metaDataBytesSize];
+        int status = read(sockData, expectedPacketsMetaData, sizeof(expectedPacketsMetaData));
+        this->pendingPacketsCount = TransferObjectData::decodeDataLength(expectedPacketsMetaData);
+
+        if(status < 0){
+            return status;
+        }
+    } else{
+        return -2;
     }
-
-
-    if (setsockopt(this->serverFileDescriptor, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,&opt, sizeof(opt))){
-        perror("setsockopt");
-        return;
-    }
-    this->addressData = {};
-    this->addressData.sin_family = AF_INET;
-    this->addressData.sin_addr.s_addr = INADDR_ANY;
-    this->addressData.sin_port = htons( port );
-
-    if (bind(this->serverFileDescriptor, (struct sockaddr *)&this->addressData, sizeof(this->addressData))<0){
-        perror("bind failed");
-        return;
-    }
+    return 0;
 }

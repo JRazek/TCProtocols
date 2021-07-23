@@ -9,7 +9,7 @@
 #include "TCPServer.h"
 #include "../transferUtils/TransferObjectData.h"
 //todo rsa crypt
-TCPServer::TCPServer(u_short port, size_t BUFFER_SIZE): port(port), BUFFER_SIZE(BUFFER_SIZE) {
+TCPServer::TCPServer(u_short port, size_t BUFFER_SIZE): port(port), BUFFER_SIZE(BUFFER_SIZE)  {
     this->socketReady = false;
     this->packetsPendingCount = 0;
     int opt = 1;
@@ -134,4 +134,8 @@ std::string TCPServer::getClientsIp(sockaddr_in sockAddrIn) {
 
 std::string TCPServer::getClientsPort(sockaddr_in sockAddrIn) {
     return std::string();
+}
+
+int TCPServer::getNextSocketID() {
+    return this->sockets.size();
 }

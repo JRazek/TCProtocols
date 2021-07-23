@@ -7,6 +7,9 @@
 #include <vector>
 #include <netinet/in.h>
 #include <unordered_map>
+
+struct Socket;
+
 typedef unsigned short u_short;
 typedef unsigned char byte;
 
@@ -21,7 +24,13 @@ private:
 
     u_short packetsPendingCount;
 
+
+    std::vector<Socket *> sockets;
+
 public:
+
+    int getNextSocketID();
+
     /**
      * 
      * initializes data, binds port

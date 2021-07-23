@@ -3,7 +3,7 @@ project(TCProtocols)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(TCProtocols STATIC Server/TCPServer.cpp Server/TCPServer.h transferUtils/TransferObjectData.cpp transferUtils/TransferObjectData.h Client/TCPClient.cpp Client/TCPClient.h Server/Connection.cpp Server/Connection.h Server/Socket.cpp Server/Socket.h)
+add_library(TCProtocols STATIC Server/TCPServer.cpp Server/TCPServer.h transferUtils/TransferObjectData.cpp transferUtils/TransferObjectData.h Client/TCPClient.cpp Client/TCPClient.h Server/Socket.cpp Server/Socket.h Server/Listener.cpp Server/Listener.h)
 
 add_executable(TEST main.cpp main.cpp)
 
