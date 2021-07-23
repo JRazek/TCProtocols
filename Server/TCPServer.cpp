@@ -14,8 +14,8 @@
 TCPServer::TCPServer(){}
 
 int TCPServer::killSocket(int socketID) {
+    std::lock_guard<std::mutex> lockGuard (this->mutex);
     delete this->sockets[socketID];
-
     return 0;
 }
 
@@ -25,18 +25,22 @@ int TCPServer::socketsCount() {
 }
 
 TCPServer::~TCPServer() {
+    std::unique_lock<std::mutex> uniqueLock (this->mutex);
+    this->serverDoneCondition.wait(uniqueLock, [](){
+        //todo condition for server death
+    });
     for(int i = 0; i < this->sockets.size(); i ++){
         delete this->sockets[i];
     }
     for(int i = 0; i < this->listeners.size(); i ++){
         auto p = listeners[i];
-        delete p.first; //releases the accept hold state ( kills socket )
-        p.second->join();
-        delete p.second;
+        delete p; //releases the accept hold state ( kills socket )
     }
 }
 
 int TCPServer::listen(in_port_t port) {
+    std::lock_guard<std::mutex> lockGuard (this->mutex);
+
     Listener *listener = new Listener(this->listeners.size(), this, port);
 
     std::thread * thread = new std::thread([](TCPServer *tcpServer, Listener *listener) mutable{
@@ -46,12 +50,12 @@ int TCPServer::listen(in_port_t port) {
             tcpServer->notifyAccept(socket1);
         return 0;
     }, this, listener);
-
-    listeners.push_back({listener, thread});
+    thread->detach();
+    this->listeners[listener->getId()] = listener;
     return 0;
 }
 
 void TCPServer::notifyAccept(Socket * socket) {
     std::lock_guard<std::mutex> lockGuard (this->mutex);
-    this->sockets.push_back(socket);
+    this->sockets[socket->getId()] = socket;
 }

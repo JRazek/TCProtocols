@@ -21,9 +21,11 @@ private:
 
     std::mutex mutex;
 
-    std::vector<Socket *> sockets;
+    std::unordered_map<int, Socket *> sockets;//id, val
 
-    std::vector<std::pair<Listener *, std::thread *>> listeners;
+    std::unordered_map<int, Listener *> listeners;//id, val
+
+    std::condition_variable serverDoneCondition;
 
     void notifyAccept(Socket * socket);
 

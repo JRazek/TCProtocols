@@ -15,6 +15,7 @@ private:
     int socketFileDescriptor;
     int pendingPacketsCount;
 
+    std::mutex mutex;
 
 
 public:

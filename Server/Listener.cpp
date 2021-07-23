@@ -4,6 +4,7 @@
 
 #include <cstdio>
 #include <unistd.h>
+#include <iostream>
 #include "Listener.h"
 #include "TCPServer.h"
 
@@ -32,6 +33,8 @@ Listener::Listener(int id, TCPServer* tcpServer, u_short port):id(id) {
 }
 
 int Listener::listen(u_short clientsPendingCount) {
+    std::lock_guard<std::mutex> lockGuard (this->mutex);
+
     if (::listen(listenerFileDescriptor, clientsPendingCount) < 0){
         perror("listen");
         return -1;
@@ -40,6 +43,8 @@ int Listener::listen(u_short clientsPendingCount) {
 }
 
 Socket* Listener::acceptFirst(u_short BUFFER_SIZE) {
+    std::lock_guard<std::mutex> lockGuard (this->mutex);
+
     int addrLen = sizeof(address);
     int socketFileDescriptor;
 
