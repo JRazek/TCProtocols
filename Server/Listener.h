@@ -7,18 +7,28 @@
 
 
 #include <netinet/in.h>
+#include <mutex>
 #include "Socket.h"
 
 class TCPServer;
 
 class Listener{
+    const int id;
+public:
+    const int getId() const;
+
+private:
+    std::mutex mutex;
     sockaddr_in address;
     int listenerFileDescriptor;
     TCPServer *tcpServer;
 public:
-    Listener(in_port_t port);
+    Listener(int id, TCPServer* tcpServer, in_port_t port);
     int listen(u_short clientsPendingCount);
+    //todo int killListener();
     Socket *acceptFirst(u_short BUFFER_SIZE);
+    void killListener();
+    ~Listener();
 };
 
 

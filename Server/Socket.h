@@ -53,6 +53,9 @@ public:
      * @return packets that are pending from client
     */
     int getPendingPacketsCount() const;
+
+
+    void shutdown();
 };
 
 

@@ -7,6 +7,8 @@
 #include <vector>
 #include <netinet/in.h>
 #include <unordered_map>
+#include <thread>
+#include <future>
 
 struct Socket;
 struct Listener;
@@ -16,8 +18,14 @@ typedef unsigned char byte;
 
 class TCPServer {
 private:
+
+    std::mutex mutex;
+
     std::vector<Socket *> sockets;
-    std::vector<Listener *> listeners;
+
+    std::vector<std::pair<Listener *, std::thread *>> listeners;
+
+    void notifyAccept(Socket * socket);
 
 public:
 

@@ -3,12 +3,14 @@
 //
 
 #include <cstdio>
+#include <unistd.h>
 #include "Listener.h"
 #include "TCPServer.h"
 
 struct TCPServer;
 
-Listener::Listener(u_short port) {
+Listener::Listener(int id, TCPServer* tcpServer, u_short port):id(id) {
+    this->tcpServer = tcpServer;
     int opt = 1;
     if ((this->listenerFileDescriptor = socket(AF_INET, SOCK_STREAM, 0)) == 0){
         perror("socket failed");
@@ -37,14 +39,28 @@ int Listener::listen(u_short clientsPendingCount) {
     return 0;
 }
 
-Socket *Listener::acceptFirst(u_short BUFFER_SIZE) {
+Socket* Listener::acceptFirst(u_short BUFFER_SIZE) {
     int addrLen = sizeof(address);
     int socketFileDescriptor;
-    if ((socketFileDescriptor = ::accept(listenerFileDescriptor, (struct sockaddr *)&address, (socklen_t*)&addrLen)) < 0){
+
+    if ((socketFileDescriptor = ::accept(this->listenerFileDescriptor, (struct sockaddr *)&address, (socklen_t*)&addrLen)) < 0){
         perror("accept");
         return nullptr;
     }
     Socket * socket1 = new Socket(this->tcpServer->socketsCount(), socketFileDescriptor, BUFFER_SIZE);
     return socket1;
+}
+
+const int Listener::getId() const {
+    return id;
+}
+
+void Listener::killListener() {
+    shutdown(this->listenerFileDescriptor, SHUT_RDWR);
+    close(this->listenerFileDescriptor);
+}
+
+Listener::~Listener() {
+    this->killListener();
 }
 

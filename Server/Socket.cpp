@@ -78,3 +78,7 @@ int Socket::getSockData() const {
 Socket::~Socket() {
     close(this->socketFileDescriptor);
 }
+
+void Socket::shutdown() {
+    ::shutdown(this->socketFileDescriptor, SHUT_RDWR);
+}
