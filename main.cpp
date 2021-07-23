@@ -25,5 +25,7 @@ int main(){
         bytes.push_back(i % 256);
     }
 
+    TCPServer server;
+    server.listen(PORT);
     return 0;
 }

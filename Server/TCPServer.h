@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 struct Socket;
+struct Listener;
 
 typedef unsigned short u_short;
 typedef unsigned char byte;
@@ -16,6 +17,7 @@ typedef unsigned char byte;
 class TCPServer {
 private:
     std::vector<Socket *> sockets;
+    std::vector<Listener *> listeners;
 
 public:
 
@@ -30,7 +32,6 @@ public:
      * */
     TCPServer();
 
-
     /**
      *
      * @param socketID
@@ -38,6 +39,8 @@ public:
      * @return 0 on success
      */
     int killSocket(int socketID);
+
+    int listen(in_port_t port);
 
    /**
     * destructor, manages all the dynamic data
