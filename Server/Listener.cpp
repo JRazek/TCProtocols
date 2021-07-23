@@ -39,12 +39,12 @@ int Listener::listen(u_short clientsPendingCount) {
 
 Socket *Listener::acceptFirst(u_short BUFFER_SIZE) {
     int addrLen = sizeof(address);
-    int newSocket;
-    if ((newSocket = ::accept(listenerFileDescriptor, (struct sockaddr *)&address, (socklen_t*)&addrLen))<0){
+    int socketFileDescriptor;
+    if ((socketFileDescriptor = ::accept(listenerFileDescriptor, (struct sockaddr *)&address, (socklen_t*)&addrLen)) < 0){
         perror("accept");
         return nullptr;
     }
-    Socket * socket1 = new Socket(this->tcpServer->getNextSocketID(), newSocket, BUFFER_SIZE);
+    Socket * socket1 = new Socket(this->tcpServer->socketsCount(), socketFileDescriptor, BUFFER_SIZE);
     return socket1;
 }
 
