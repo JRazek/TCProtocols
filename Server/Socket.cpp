@@ -85,7 +85,7 @@ void Socket::run() {
                 //todo check if peer did not close connection timeout or sth
                 if(res.first == 0) {
                     Logger::log("error occurred while reading a packet!", LEVEL::ERROR);
-                    break;
+                    throw std::system_error();
                 }
                 this->tcpServer->notifyNewPacket(this->id, res.second);
             }

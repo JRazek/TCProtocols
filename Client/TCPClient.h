@@ -39,6 +39,11 @@ public:
      */
     int sendPacketsMetaData(u_short packetsCount);
 
+    /**
+     * sends encoded packet to server
+     * @return status code - 0 if success
+     */
+    int sendPacket(const std::string data);
 
     /**
      * sends encoded packet to server
