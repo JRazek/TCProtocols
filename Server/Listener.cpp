@@ -13,6 +13,7 @@ struct TCPServer;
 Listener::Listener(int id, TCPServer* tcpServer, u_short port, u_short clientsPendingCount):id(id) {
     this->tcpServer = tcpServer;
     this->clientsPendingCount = clientsPendingCount;
+    this->listenerFileDescriptor = -1;
 
     int opt = 1;
     if ((this->listenerFileDescriptor = socket(AF_INET, SOCK_STREAM, 0)) == 0){
@@ -45,8 +46,9 @@ int Listener::listen() {
 int Listener::acceptFirst() {
     int addrLen = sizeof(address);
     int socketFileDescriptor;
-    std::lock_guard lockGuard(this->mutex);
-    if ((socketFileDescriptor = ::accept(this->listenerFileDescriptor, (struct sockaddr *)&address, (socklen_t*)&addrLen)) < 0){
+    //std::lock_guard lockGuard(this->mutex);
+
+    if ((socketFileDescriptor = ::accept(this->listenerFileDescriptor, (struct sockaddr *) &address,(socklen_t *) &addrLen)) < 0) {
         perror("accept");
         return -1;
     }
@@ -58,7 +60,7 @@ const int Listener::getId() const {
 }
 
 void Listener::killListener() {
-    std::lock_guard lockGuard(this->mutex);
+    //std::lock_guard lockGuard(this->mutex);
     shutdown(this->listenerFileDescriptor, SHUT_RDWR);
     close(this->listenerFileDescriptor);
 }
@@ -70,6 +72,10 @@ Listener::~Listener() {
 void Listener::run() {
     if(this->listen() >= 0) {
         std::thread thread([this]() mutable {
+//            while(int socketFD = this->acceptFirst() >= 0) {
+//                this->tcpServer->notifyAccept(socketFD);
+//            }
+
             int socketFD = this->acceptFirst();
             if (socketFD != -1) {
                 this->tcpServer->notifyAccept(socketFD);

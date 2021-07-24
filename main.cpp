@@ -33,8 +33,8 @@ int main(){
 
         TCPClient client(addr, PORT);
 
-        std::this_thread::sleep_for (std::chrono::microseconds (100000l));
-        client.connect();
+        //std::this_thread::sleep_for (std::chrono::microseconds (100000l));
+       // client.connect();
 
         run.join();
     }
