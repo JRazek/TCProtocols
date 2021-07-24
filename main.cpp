@@ -42,7 +42,8 @@ int main(){
 
     serverRunnable->join();
 
-
+//    TCPClient client1("10.0.0.8", PORT);
+//    client1.connect();
 
     return 0;
 }

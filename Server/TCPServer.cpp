@@ -11,6 +11,7 @@
 #include "../transferUtils/TransferObjectData.h"
 #include "Socket.h"
 #include "Listener.h"
+#include "../Logger/Logger.h"
 
 TCPServer::TCPServer(){}
 
@@ -48,6 +49,7 @@ void TCPServer::notifyAccept(int socketFileDescriptor) {
 
 std::thread * TCPServer::run() {
     std::thread * run = new std::thread([this]() {
+        Logger::log("Starting tcp server... ", LEVEL::INFO);
         std::vector<std::thread *> threads;
         for(auto l : listeners){
             threads.push_back(l.second->run());
@@ -61,7 +63,7 @@ std::thread * TCPServer::run() {
 
 void TCPServer::addListener(in_port_t port) {
     Listener *listener = new Listener(this->listeners.size(), this, port, 4);
-    this->listeners[listener->getId()] = listener;
+    this->listeners[listener->id] = listener;
 }
 
 void TCPServer::notifyNewPacket(int socketID, std::vector<byte> &data) {

@@ -14,9 +14,9 @@
 class TCPServer;
 
 class Listener{
-    const int id;
 public:
-    const int getId() const;
+    const int id;
+    const in_port_t port;
 
 private:
     std::mutex mutex;

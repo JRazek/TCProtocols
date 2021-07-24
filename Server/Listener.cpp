@@ -5,12 +5,14 @@
 #include <cstdio>
 #include <unistd.h>
 #include <iostream>
+#include <arpa/inet.h>
 #include "Listener.h"
 #include "TCPServer.h"
+#include "../Logger/Logger.h"
 
 struct TCPServer;
 
-Listener::Listener(int id, TCPServer* tcpServer, u_short port, u_short clientsPendingCount):id(id) {
+Listener::Listener(int id, TCPServer* tcpServer, u_short port, u_short clientsPendingCount):id(id), port(port) {
     this->tcpServer = tcpServer;
     this->clientsPendingCount = clientsPendingCount;
     this->listenerFileDescriptor = -1;
@@ -54,10 +56,6 @@ int Listener::acceptFirst() {
     return socketFileDescriptor;
 }
 
-const int Listener::getId() const {
-    return id;
-}
-
 void Listener::killListener() {
     shutdown(this->listenerFileDescriptor, SHUT_RDWR);
     std::lock_guard lockGuard(this->mutex);
@@ -71,15 +69,23 @@ Listener::~Listener() {
 std::thread * Listener::run() {
     if(this->listen() >= 0) {
         std::thread * thread = new std::thread([this]() mutable {
-            int socketFD;
-            while((socketFD = this->acceptFirst()) >= 0) {
-                this->tcpServer->notifyAccept(socketFD);
+            Logger::log("Listening on port " + std::to_string(this->id), LEVEL::INFO);
+            if(this->listen() >= 0) {
+                int socketFD;
+                while ((socketFD = this->acceptFirst()) >= 0) {
+                    int ip = getpeername(socketFD,(struct sockaddr *) &address,(socklen_t *) (sizeof(address)));
+                    struct in_addr ip_addr;
+                    ip_addr.s_addr = ip;
+                    std::string ipStr = inet_ntoa(ip_addr);
+                    Logger::log("Accepted connection from host  " + ipStr, LEVEL::INFO);
+                    this->tcpServer->notifyAccept(socketFD);
+                }
+                return 0;
             }
-            return 0;
+            return -1;
         });
         return thread;
-    } else{
-        throw std::system_error(std::error_code());
     }
+    return nullptr;
 }
 
