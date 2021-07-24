@@ -88,8 +88,6 @@ void Socket::run() {
                 this->tcpServer->notifyNewPacket(this->id, res.second);
             }
         }
-        perror("read");
-
     });
     receiveThread.detach();
 }
