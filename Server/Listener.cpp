@@ -67,25 +67,24 @@ Listener::~Listener() {
 }
 
 std::thread * Listener::run() {
-    if(this->listen() >= 0) {
-        std::thread * thread = new std::thread([this]() mutable {
-            Logger::log("Listening on port " + std::to_string(this->id), LEVEL::INFO);
-            if(this->listen() >= 0) {
-                int socketFD;
-                while ((socketFD = this->acceptFirst()) >= 0) {
-                    int ip = getpeername(socketFD,(struct sockaddr *) &address,(socklen_t *) (sizeof(address)));
-                    struct in_addr ip_addr;
-                    ip_addr.s_addr = ip;
-                    std::string ipStr = inet_ntoa(ip_addr);
-                    Logger::log("Accepted connection from host  " + ipStr, LEVEL::INFO);
-                    this->tcpServer->notifyAccept(socketFD);
-                }
-                return 0;
+    std::thread * thread = new std::thread([this]() mutable {
+        Logger::log("Listening on port " + std::to_string(this->port), LEVEL::INFO);
+        if(this->listen() >= 0) {
+            int socketFD;
+            while ((socketFD = this->acceptFirst()) >= 0) {
+                int addrLen = sizeof(address);
+                int ip = getpeername(socketFD, (struct sockaddr *) &address,(socklen_t *) &addrLen);
+                struct in_addr ip_addr;
+                ip_addr.s_addr = ip;
+                std::string ipStr = inet_ntoa(ip_addr);
+                Logger::log("Accepted connection from host " + ipStr, LEVEL::INFO);
+                this->tcpServer->notifyAccept(socketFD);
             }
-            return -1;
-        });
-        return thread;
-    }
-    return nullptr;
+            return 0;
+        }
+        Logger::log("Listening on port failed!  ", LEVEL::ERROR);
+        return -1;
+    });
+    return thread;
 }
 

@@ -26,11 +26,6 @@ int TCPServer::socketsCount() {
 
 TCPServer::~TCPServer() {
     std::unique_lock<std::mutex> uniqueLock (this->mutex);
-    this->serverDoneCondition.wait(uniqueLock, [](){
-        //todo condition for server death
-        return 1;
-    });
-
     for(int i = 0; i < this->listeners.size(); i ++){
         auto p = listeners[i];
         delete p; //releases the accept hold state ( kills socket )
@@ -68,4 +63,5 @@ void TCPServer::addListener(in_port_t port) {
 
 void TCPServer::notifyNewPacket(int socketID, std::vector<byte> &data) {
     //override it
+    Logger::log("received new packet from socket " + std::to_string(socketID), LEVEL::INFO);
 }
