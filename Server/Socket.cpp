@@ -80,6 +80,11 @@ void Socket::run() {
                 if (res.first < 0) {
                     throw std::runtime_error(std::string("Failed: ") + std::to_string(res.first));
                 }
+
+                //todo check if peer did not close connection timeout or sth
+                if(res.first == 0)
+                    break;
+
                 this->tcpServer->notifyNewPacket(this->id, res.second);
             }
         }
