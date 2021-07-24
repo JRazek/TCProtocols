@@ -14,21 +14,20 @@
 TCPServer::TCPServer(){}
 
 int TCPServer::killSocket(int socketID) {
-    std::lock_guard<std::mutex> lockGuard (this->mutex);
     delete this->sockets[socketID];
     return 0;
 }
 
 int TCPServer::socketsCount() {
-    std::lock_guard<std::mutex> lockGuard (this->mutex);
     return this->sockets.size();
 }
 
 TCPServer::~TCPServer() {
-    std::unique_lock<std::mutex> uniqueLock (this->mutex);
-    this->serverDoneCondition.wait(uniqueLock, [](){
-        //todo condition for server death
-    });
+//    std::unique_lock<std::mutex> uniqueLock (this->mutex);
+//    this->serverDoneCondition.wait(uniqueLock, [](){
+//        //todo condition for server death
+//        return 1;
+//    });
     for(int i = 0; i < this->sockets.size(); i ++){
         delete this->sockets[i];
     }
@@ -38,24 +37,21 @@ TCPServer::~TCPServer() {
     }
 }
 
-int TCPServer::listen(in_port_t port) {
-    std::lock_guard<std::mutex> lockGuard (this->mutex);
-
-    Listener *listener = new Listener(this->listeners.size(), this, port);
-
-    std::thread * thread = new std::thread([](TCPServer *tcpServer, Listener *listener) mutable{
-        listener->listen(3);
-        Socket * socket1 = listener->acceptFirst(4096);
-        if(socket1 != nullptr)
-            tcpServer->notifyAccept(socket1);
-        return 0;
-    }, this, listener);
-    thread->detach();
-    this->listeners[listener->getId()] = listener;
-    return 0;
+void TCPServer::notifyAccept(int socketFileDescriptor) {
+    std::lock_guard guard(this->mutex);
+    Socket * socket = new Socket(this->sockets.size(), socketFileDescriptor, 4096);
+    this->sockets[socket->getId()] = socket;
+    //handle socket here
 }
 
-void TCPServer::notifyAccept(Socket * socket) {
-    std::lock_guard<std::mutex> lockGuard (this->mutex);
-    this->sockets[socket->getId()] = socket;
+void TCPServer::run() {
+    for(auto l : listeners){
+        l.second->run();
+    }
+}
+
+void TCPServer::addListener(in_port_t port) {
+    Listener *listener = new Listener(this->listeners.size(), this, port, 4);
+    this->listeners[listener->getId()] = listener;
+
 }

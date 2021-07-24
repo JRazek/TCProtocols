@@ -19,7 +19,7 @@ private:
 
 
 public:
-    Socket(int id, int sockData, size_t BUFFER_SIZE);
+    Socket(int id, int fileDescriptor, size_t BUFFER_SIZE);
 
     /**
      *

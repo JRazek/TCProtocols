@@ -8,14 +8,12 @@
 #include "Socket.h"
 #include "../transferUtils/TransferObjectData.h"
 
-Socket::Socket(int id, int sockData, size_t BUFFER_SIZE) :id(id), BUFFER_SIZE(BUFFER_SIZE) {
-    this->socketFileDescriptor = sockData;
+Socket::Socket(int id, int fileDescriptor, size_t BUFFER_SIZE) : id(id), BUFFER_SIZE(BUFFER_SIZE) {
+    this->socketFileDescriptor = fileDescriptor;
     this->pendingPacketsCount = 0;
 }
 
 int Socket::readPacketsHeader() {
-    std::lock_guard<std::mutex> lockGuard (this->mutex);
-
     if(!this->pendingPacketsCount){
         byte expectedPacketsMetaData[TransferObjectData::metaDataBytesSize];
         int status = read(socketFileDescriptor, expectedPacketsMetaData, sizeof(expectedPacketsMetaData));
@@ -31,8 +29,6 @@ int Socket::readPacketsHeader() {
 }
 
 std::pair<int, std::vector<byte>> Socket::readPacket() {
-    std::lock_guard<std::mutex> lockGuard (this->mutex);
-
     if(this->pendingPacketsCount) {
 
         byte packetMetaData[TransferObjectData::metaDataBytesSize];
@@ -81,8 +77,6 @@ int Socket::getSockData() const {
 }
 
 Socket::~Socket() {
-    std::lock_guard<std::mutex> lockGuard (this->mutex);
-
     close(this->socketFileDescriptor);
 }
 

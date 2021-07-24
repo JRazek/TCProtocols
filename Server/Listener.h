@@ -22,12 +22,18 @@ private:
     sockaddr_in address;
     int listenerFileDescriptor;
     TCPServer *tcpServer;
+    u_short clientsPendingCount;
+
+
+    int listen();
+    /**
+     * returns file descriptor.
+     * */
+    int acceptFirst();
 public:
-    Listener(int id, TCPServer* tcpServer, in_port_t port);
-    int listen(u_short clientsPendingCount);
-    //todo int killListener();
-    Socket *acceptFirst(u_short BUFFER_SIZE);
+    Listener(int id, TCPServer* tcpServer, in_port_t port, u_short clientsPendingCount);
     void killListener();
+    void run();
     ~Listener();
 };
 

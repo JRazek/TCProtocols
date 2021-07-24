@@ -27,21 +27,6 @@ private:
 
     std::condition_variable serverDoneCondition;
 
-    void notifyAccept(Socket * socket);
-
-public:
-
-    /**
-     *
-     * @return sockets count
-     */
-    int socketsCount();
-
-    /**
-     * init
-     * */
-    TCPServer();
-
     /**
      *
      * @param socketID
@@ -50,12 +35,44 @@ public:
      */
     int killSocket(int socketID);
 
-    int listen(in_port_t port);
+
+public:
+
+    /**
+     * init
+     * */
+    TCPServer();
+
+    /**
+     * accessed from other threads. Must be secure.
+     * @param socketFileDescriptor
+     */
+
+    void notifyAccept(int socketFileDescriptor);
+
+
+    /**
+     * inits listeners to run
+     */
+    void addListener(in_port_t port);
+
+
+    /**
+     * runs the server
+     */
+    void run();
+
 
    /**
     * destructor, manages all the dynamic data
     */
    ~TCPServer();
+
+/**
+ *
+ * @return sockets count
+ */
+int socketsCount();
 };
 
 
