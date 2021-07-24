@@ -2,8 +2,8 @@
 // Created by user on 17.07.2021.
 //
 
-#ifndef OPENCV_TCPSERVER_H
-#define OPENCV_TCPSERVER_H
+#ifndef TCPROTOCOLS_TCPSERVER_H
+#define TCPROTOCOLS_TCPSERVER_H
 #include <vector>
 #include <netinet/in.h>
 #include <unordered_map>

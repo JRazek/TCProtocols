@@ -26,6 +26,7 @@ int TCPClient::connect() {
         printf("\nConnection Failed \n");
         return -1;
     }
+    printf("\nConnected to server \n");
     return 0;
 }
 int TCPClient::sendPacket(const byte *bytes, u_int64_t size) {

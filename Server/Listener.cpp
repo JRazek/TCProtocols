@@ -49,7 +49,6 @@ int Listener::acceptFirst() {
     std::lock_guard lockGuard(this->mutex);
     if ((socketFileDescriptor = ::accept(this->listenerFileDescriptor, (struct sockaddr *) &address,(socklen_t *) &addrLen)) < 0) {
         perror("accept");
-        return -1;
     }
     return socketFileDescriptor;
 }
@@ -71,14 +70,14 @@ Listener::~Listener() {
 void Listener::run() {
     if(this->listen() >= 0) {
         std::thread thread([this]() mutable {
-//            while(int socketFD = this->acceptFirst() >= 0) {
-//                this->tcpServer->notifyAccept(socketFD);
-//            }
-
-            int socketFD = this->acceptFirst();
-            if (socketFD != -1) {
+            while(int socketFD = this->acceptFirst() >= 0) {
                 this->tcpServer->notifyAccept(socketFD);
             }
+
+//            int socketFD = this->acceptFirst();
+//            if (socketFD != -1) {
+//                this->tcpServer->notifyAccept(socketFD);
+//            }
             return 0;
         });
 

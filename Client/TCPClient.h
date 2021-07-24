@@ -2,8 +2,8 @@
 // Created by user on 17.07.2021.
 //
 
-#ifndef OPENCV_TCPCLIENT_H
-#define OPENCV_TCPCLIENT_H
+#ifndef TCPROTOCOLS_TCPCLIENT_H
+#define TCPROTOCOLS_TCPCLIENT_H
 
 #include <netinet/in.h>
 #include <vector>
