@@ -56,6 +56,8 @@ public:
     int getPendingPacketsCount() const;
 
 
+    void run();
+
     void shutdown();
 };
 

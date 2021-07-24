@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <unistd.h>
 #include <iostream>
+#include <cstring>
 #include "Listener.h"
 #include "TCPServer.h"
 
@@ -48,7 +49,8 @@ int Listener::acceptFirst() {
     int socketFileDescriptor;
     std::lock_guard lockGuard(this->mutex);
     if ((socketFileDescriptor = ::accept(this->listenerFileDescriptor, (struct sockaddr *) &address,(socklen_t *) &addrLen)) < 0) {
-        perror("accept");
+        if(errno != 22)
+            perror("accept");
     }
     return socketFileDescriptor;
 }
@@ -73,14 +75,8 @@ void Listener::run() {
             while(int socketFD = this->acceptFirst() >= 0) {
                 this->tcpServer->notifyAccept(socketFD);
             }
-
-//            int socketFD = this->acceptFirst();
-//            if (socketFD != -1) {
-//                this->tcpServer->notifyAccept(socketFD);
-//            }
             return 0;
         });
-
         thread.detach();
     } else{
         throw std::system_error(std::error_code());

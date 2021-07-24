@@ -42,7 +42,7 @@ void TCPServer::notifyAccept(int socketFileDescriptor) {
     std::lock_guard guard(this->mutex);
     Socket * socket = new Socket(this->sockets.size(), socketFileDescriptor, 4096);
     this->sockets[socket->getId()] = socket;
-    //handle socket here
+    socket->r
 }
 
 void TCPServer::run() {

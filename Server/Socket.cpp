@@ -83,3 +83,7 @@ Socket::~Socket() {
 void Socket::shutdown() {
     ::shutdown(this->socketFileDescriptor, SHUT_RDWR);
 }
+
+void Socket::run() {
+    
+}
