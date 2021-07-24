@@ -9,6 +9,7 @@
 #include "Socket.h"
 #include "../transferUtils/TransferObjectData.h"
 #include "TCPServer.h"
+#include "../Logger/Logger.h"
 
 Socket::Socket(int id, int fileDescriptor, TCPServer *tcpServer, size_t BUFFER_SIZE) : id(id), BUFFER_SIZE(BUFFER_SIZE) {
     this->socketFileDescriptor = fileDescriptor;
@@ -82,9 +83,10 @@ void Socket::run() {
                 }
 
                 //todo check if peer did not close connection timeout or sth
-                if(res.first == 0)
+                if(res.first == 0) {
+                    Logger::log("error occurred while reading a packet!", LEVEL::ERROR);
                     break;
-
+                }
                 this->tcpServer->notifyNewPacket(this->id, res.second);
             }
         }
