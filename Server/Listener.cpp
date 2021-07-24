@@ -50,7 +50,6 @@ int Listener::acceptFirst() {
         perror("accept");
         return -1;
     }
-   // Socket * socket1 = new Socket(this->tcpServer->socketsCount(), socketFileDescriptor, BUFFER_SIZE);
     return socketFileDescriptor;
 }
 

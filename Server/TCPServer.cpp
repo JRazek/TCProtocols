@@ -28,12 +28,13 @@ TCPServer::~TCPServer() {
 //        //todo condition for server death
 //        return 1;
 //    });
-    for(int i = 0; i < this->sockets.size(); i ++){
-        delete this->sockets[i];
-    }
+
     for(int i = 0; i < this->listeners.size(); i ++){
         auto p = listeners[i];
         delete p; //releases the accept hold state ( kills socket )
+    }
+    for(int i = 0; i < this->sockets.size(); i ++){
+        delete this->sockets[i];
     }
 }
 
@@ -53,5 +54,4 @@ void TCPServer::run() {
 void TCPServer::addListener(in_port_t port) {
     Listener *listener = new Listener(this->listeners.size(), this, port, 4);
     this->listeners[listener->getId()] = listener;
-
 }

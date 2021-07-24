@@ -26,14 +26,17 @@ int main(){
     }
 
     TCPServer server;
-
+    server.addListener(PORT);
     std::thread run([](TCPServer * server1){
         server1->run();
     }, &server);
 
     TCPClient client(addr, PORT);
 
+    sleep(1);
+    client.connect();
 
+    run.join();
     for(int i = 0; i < 10; i ++){
         std::cout<<"";
     }
