@@ -5,7 +5,6 @@
 #include <cstdio>
 #include <unistd.h>
 #include <iostream>
-#include <cstring>
 #include "Listener.h"
 #include "TCPServer.h"
 
@@ -69,15 +68,16 @@ Listener::~Listener() {
     this->killListener();
 }
 
-void Listener::run() {
+std::thread * Listener::run() {
     if(this->listen() >= 0) {
-        std::thread thread([this]() mutable {
-            while(int socketFD = this->acceptFirst() >= 0) {
+        std::thread * thread = new std::thread([this]() mutable {
+            int socketFD;
+            while((socketFD = this->acceptFirst()) >= 0) {
                 this->tcpServer->notifyAccept(socketFD);
             }
             return 0;
         });
-        thread.detach();
+        return thread;
     } else{
         throw std::system_error(std::error_code());
     }

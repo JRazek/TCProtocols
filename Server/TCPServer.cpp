@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <cstdio>
 #include <zconf.h>
+#include <iostream>
 #include "TCPServer.h"
 #include "../transferUtils/TransferObjectData.h"
 #include "Socket.h"
@@ -23,11 +24,11 @@ int TCPServer::socketsCount() {
 }
 
 TCPServer::~TCPServer() {
-//    std::unique_lock<std::mutex> uniqueLock (this->mutex);
-//    this->serverDoneCondition.wait(uniqueLock, [](){
-//        //todo condition for server death
-//        return 1;
-//    });
+    std::unique_lock<std::mutex> uniqueLock (this->mutex);
+    this->serverDoneCondition.wait(uniqueLock, [](){
+        //todo condition for server death
+        return 1;
+    });
 
     for(int i = 0; i < this->listeners.size(); i ++){
         auto p = listeners[i];
@@ -40,18 +41,30 @@ TCPServer::~TCPServer() {
 
 void TCPServer::notifyAccept(int socketFileDescriptor) {
     std::lock_guard guard(this->mutex);
-    Socket * socket = new Socket(this->sockets.size(), socketFileDescriptor, 4096);
+    Socket * socket = new Socket(this->sockets.size(), socketFileDescriptor, this, 4096);
     this->sockets[socket->getId()] = socket;
-    socket->r
+    socket->run();
 }
 
 void TCPServer::run() {
+    std::vector<std::thread *> threads;
     for(auto l : listeners){
-        l.second->run();
+        threads.push_back(l.second->run());
+    }
+    for(auto t : threads){
+        t->join();
+        std::cout<<"joined!\n";
     }
 }
 
 void TCPServer::addListener(in_port_t port) {
     Listener *listener = new Listener(this->listeners.size(), this, port, 4);
     this->listeners[listener->getId()] = listener;
+}
+
+void TCPServer::notifyNewPacket(int socketID, std::vector<byte> &data) {
+    for(auto c : data){
+        //std::cout<<c<<" ";
+    }
+    //make it abstract later in implementation
 }

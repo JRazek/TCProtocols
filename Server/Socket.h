@@ -7,6 +7,8 @@
 
 #include <vector>
 
+class TCPServer;
+
 typedef unsigned char byte;
 class Socket {
 private:
@@ -14,12 +16,13 @@ private:
     const size_t BUFFER_SIZE;
     int socketFileDescriptor;
     int pendingPacketsCount;
+    TCPServer* tcpServer;
 
     std::mutex mutex;
 
 
 public:
-    Socket(int id, int fileDescriptor, size_t BUFFER_SIZE);
+    Socket(int id, int fileDescriptor, TCPServer *tcpServer, size_t BUFFER_SIZE);
 
     /**
      *

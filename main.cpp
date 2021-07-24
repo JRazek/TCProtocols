@@ -35,8 +35,12 @@ int main(){
 
     std::this_thread::sleep_for (std::chrono::microseconds (100000l));
     client.connect();
+    std::this_thread::sleep_for (std::chrono::microseconds (1000l));
 
-    run.detach();
+    client.sendPacketsMetaData(1);
+    client.sendPacket(bytes);
+
+    run.join();
 
 
 

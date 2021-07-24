@@ -8,6 +8,7 @@
 
 #include <netinet/in.h>
 #include <mutex>
+#include <thread>
 #include "Socket.h"
 
 class TCPServer;
@@ -33,7 +34,7 @@ private:
 public:
     Listener(int id, TCPServer* tcpServer, in_port_t port, u_short clientsPendingCount);
     void killListener();
-    void run();
+    std::thread * run();
     ~Listener();
 };
 

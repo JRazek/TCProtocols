@@ -51,6 +51,8 @@ public:
     void notifyAccept(int socketFileDescriptor);
 
 
+    void notifyNewPacket(int socketID, std::vector<byte> &data);
+
     /**
      * inits listeners to run
      */

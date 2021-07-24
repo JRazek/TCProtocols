@@ -5,12 +5,15 @@
 #include <cstdio>
 #include <sys/socket.h>
 #include <mutex>
+#include <thread>
 #include "Socket.h"
 #include "../transferUtils/TransferObjectData.h"
+#include "TCPServer.h"
 
-Socket::Socket(int id, int fileDescriptor, size_t BUFFER_SIZE) : id(id), BUFFER_SIZE(BUFFER_SIZE) {
+Socket::Socket(int id, int fileDescriptor, TCPServer *tcpServer, size_t BUFFER_SIZE) : id(id), BUFFER_SIZE(BUFFER_SIZE) {
     this->socketFileDescriptor = fileDescriptor;
     this->pendingPacketsCount = 0;
+    this->tcpServer = tcpServer;
 }
 
 int Socket::readPacketsHeader() {
@@ -20,6 +23,7 @@ int Socket::readPacketsHeader() {
         this->pendingPacketsCount = TransferObjectData::decodeDataLength(expectedPacketsMetaData);
 
         if(status < 0){
+            perror("");
             return status;
         }
     } else{
@@ -30,9 +34,7 @@ int Socket::readPacketsHeader() {
 
 std::pair<int, std::vector<byte>> Socket::readPacket() {
     if(this->pendingPacketsCount) {
-
         byte packetMetaData[TransferObjectData::metaDataBytesSize];
-
         int status = read(socketFileDescriptor, &packetMetaData, sizeof(packetMetaData));
         if (status < 0)
             return {status, {}};
@@ -85,5 +87,19 @@ void Socket::shutdown() {
 }
 
 void Socket::run() {
-    
+    std::thread receiveThread([this] (){
+        std::lock_guard lockGuard(this->mutex);
+        while(readPacketsHeader() >= 0) {
+            while (this->pendingPacketsCount) {
+                auto res = this->readPacket();
+                if (res.first < 0) {
+                    throw std::runtime_error(std::string("Failed: ") + std::to_string(res.first));
+                }
+                this->tcpServer->notifyNewPacket(this->id, res.second);
+            }
+        }
+        perror("read");
+
+    });
+    receiveThread.detach();
 }
