@@ -12,16 +12,17 @@ class TCPServer;
 typedef unsigned char byte;
 class Socket {
 private:
-    const int id;
-    const size_t BUFFER_SIZE;
     int socketFileDescriptor;
     int pendingPacketsCount;
     TCPServer* tcpServer;
 
     std::mutex mutex;
 
-
 public:
+    const int id;
+    const size_t BUFFER_SIZE;
+
+
     Socket(int id, int fileDescriptor, TCPServer *tcpServer, size_t BUFFER_SIZE);
 
     /**
@@ -41,22 +42,6 @@ public:
      * @return
      */
     ~Socket();
-
-
-
-    /**
-     *
-     * all the getters
-    */
-    const int getId() const;
-    const size_t getBufferSize() const;
-    int getSockData() const;
-
-    /**
-     *
-     * @return packets that are pending from client
-    */
-    int getPendingPacketsCount() const;
 
 
     void run();

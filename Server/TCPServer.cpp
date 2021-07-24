@@ -42,19 +42,21 @@ TCPServer::~TCPServer() {
 void TCPServer::notifyAccept(int socketFileDescriptor) {
     std::lock_guard guard(this->mutex);
     Socket * socket = new Socket(this->sockets.size(), socketFileDescriptor, this, 4096);
-    this->sockets[socket->getId()] = socket;
+    this->sockets[socket->id] = socket;
     socket->run();
 }
 
-void TCPServer::run() {
-    std::vector<std::thread *> threads;
-    for(auto l : listeners){
-        threads.push_back(l.second->run());
-    }
-    for(auto t : threads){
-        t->join();
-        std::cout<<"joined!\n";
-    }
+std::thread * TCPServer::run() {
+    std::thread * run = new std::thread([this]() {
+        std::vector<std::thread *> threads;
+        for(auto l : listeners){
+            threads.push_back(l.second->run());
+        }
+        for(auto t : threads){
+            t->join();
+        }
+    });
+    return run;
 }
 
 void TCPServer::addListener(in_port_t port) {
@@ -63,5 +65,5 @@ void TCPServer::addListener(in_port_t port) {
 }
 
 void TCPServer::notifyNewPacket(int socketID, std::vector<byte> &data) {
-    //override it 
+    //override it
 }

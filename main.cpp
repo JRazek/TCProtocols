@@ -27,20 +27,20 @@ int main(){
 
     TCPServer server;
     server.addListener(PORT);
-    std::thread run([&server]() {
-        server.run();
-    });
+    std::thread * serverRunnable = server.run();
 
-    TCPClient client(addr, PORT);
+    TCPClient client1(addr, PORT);
+    TCPClient client2(addr, PORT);
 
     std::this_thread::sleep_for (std::chrono::microseconds (100000l));
-    client.connect();
+    client1.connect();
+    client2.connect();
     std::this_thread::sleep_for (std::chrono::microseconds (1000l));
 
-    client.sendPacketsMetaData(1);
-    client.sendPacket(bytes);
+    client1.sendPacketsMetaData(1);
+    client1.sendPacket(bytes);
 
-    run.join();
+    serverRunnable->join();
 
 
 

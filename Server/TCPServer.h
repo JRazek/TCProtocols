@@ -62,7 +62,7 @@ public:
     /**
      * runs the server
      */
-    void run();
+    std::thread * run();
 
 
    /**

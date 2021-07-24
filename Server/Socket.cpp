@@ -34,6 +34,7 @@ int Socket::readPacketsHeader() {
 
 std::pair<int, std::vector<byte>> Socket::readPacket() {
     if(this->pendingPacketsCount) {
+        std::lock_guard lockGuard(this->mutex);
         byte packetMetaData[TransferObjectData::metaDataBytesSize];
         int status = read(socketFileDescriptor, &packetMetaData, sizeof(packetMetaData));
         if (status < 0)
@@ -62,23 +63,8 @@ std::pair<int, std::vector<byte>> Socket::readPacket() {
     return {-1, {}};
 }
 
-int Socket::getPendingPacketsCount() const {
-    return pendingPacketsCount;
-}
-
-const int Socket::getId() const {
-    return id;
-}
-
-const size_t Socket::getBufferSize() const {
-    return BUFFER_SIZE;
-}
-
-int Socket::getSockData() const {
-    return socketFileDescriptor;
-}
-
 Socket::~Socket() {
+    std::lock_guard lockGuard(this->mutex);
     close(this->socketFileDescriptor);
 }
 
@@ -88,7 +74,6 @@ void Socket::shutdown() {
 
 void Socket::run() {
     std::thread receiveThread([this] (){
-        std::lock_guard lockGuard(this->mutex);
         while(readPacketsHeader() >= 0) {
             while (this->pendingPacketsCount) {
                 auto res = this->readPacket();
