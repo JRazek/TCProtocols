@@ -63,8 +63,5 @@ void TCPServer::addListener(in_port_t port) {
 }
 
 void TCPServer::notifyNewPacket(int socketID, std::vector<byte> &data) {
-    for(auto c : data){
-        //std::cout<<c<<" ";
-    }
-    //make it abstract later in implementation
+    //override it 
 }
