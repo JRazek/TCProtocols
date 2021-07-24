@@ -45,7 +45,7 @@ int Listener::listen() {
 int Listener::acceptFirst() {
     int addrLen = sizeof(address);
     int socketFileDescriptor;
-
+    std::lock_guard lockGuard(this->mutex);
     if ((socketFileDescriptor = ::accept(this->listenerFileDescriptor, (struct sockaddr *)&address, (socklen_t*)&addrLen)) < 0){
         perror("accept");
         return -1;
@@ -58,6 +58,7 @@ const int Listener::getId() const {
 }
 
 void Listener::killListener() {
+    std::lock_guard lockGuard(this->mutex);
     shutdown(this->listenerFileDescriptor, SHUT_RDWR);
     close(this->listenerFileDescriptor);
 }
@@ -67,16 +68,18 @@ Listener::~Listener() {
 }
 
 void Listener::run() {
-    this->listen();
+    if(this->listen() >= 0) {
+        std::thread thread([this]() mutable {
+            int socketFD = this->acceptFirst();
+            if (socketFD != -1) {
+                this->tcpServer->notifyAccept(socketFD);
+            }
+            return 0;
+        });
 
-    std::thread thread([this]() mutable{
-        int socketFD = this->acceptFirst();
-        if(socketFD != -1){
-            this->tcpServer->notifyAccept(socketFD);
-        }
-        return 0;
-    });
-
-    thread.detach();
+        thread.detach();
+    } else{
+        throw std::system_error(std::error_code());
+    }
 }
 

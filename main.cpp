@@ -24,21 +24,21 @@ int main(){
     for(int i = 0; i < DATA_SIZE; i++){
         bytes.push_back(i % 256);
     }
+    {
+        TCPServer server;
+        server.addListener(PORT);
+        std::thread run([&server]() {
+            server.run();
+        });
 
-    TCPServer server;
-    server.addListener(PORT);
-    std::thread run([](TCPServer * server1){
-        server1->run();
-    }, &server);
+        TCPClient client(addr, PORT);
 
-    TCPClient client(addr, PORT);
+        std::this_thread::sleep_for (std::chrono::microseconds (100000l));
+        client.connect();
 
-    sleep(1);
-    client.connect();
-
-    run.join();
-    for(int i = 0; i < 10; i ++){
-        std::cout<<"";
+        run.join();
     }
+
+
     return 0;
 }
