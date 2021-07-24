@@ -17,27 +17,27 @@ int main(){
     const u_short PORT = 12321;
     const size_t BUFFER_SIZE = 600000;
     const char * addr = "10.0.0.8";
-
-
-    std::vector<byte> bytes;
-    bytes.reserve(DATA_SIZE);
-    for(int i = 0; i < DATA_SIZE; i++){
-        bytes.push_back(i % 256);
-    }
+//
+//
+//    std::vector<byte> bytes;
+//    bytes.reserve(DATA_SIZE);
+//    for(int i = 0; i < DATA_SIZE; i++){
+//        bytes.push_back(i % 256);
+//    }
 
     TCPServer server;
     server.addListener(PORT);
     std::thread * serverRunnable = server.run();
-
-    TCPClient client1(addr, PORT);
-    TCPClient client2(addr, PORT);
-
-    std::this_thread::sleep_for (std::chrono::microseconds (100000l));
-    client1.connect();
-    client2.connect();
-    std::this_thread::sleep_for (std::chrono::microseconds (1000l));
-
-    client1.sendPacketsMetaData(1);
+//
+//    TCPClient client1(addr, PORT);
+//    TCPClient client2(addr, PORT);
+//
+//    std::this_thread::sleep_for (std::chrono::microseconds (100000l));
+//    client1.connect();
+//    client2.connect();
+//    std::this_thread::sleep_for (std::chrono::microseconds (1000l));
+//
+//    client1.sendPacketsMetaData(1);
    // client1.sendPacket(bytes);
 
     serverRunnable->join();
