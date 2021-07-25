@@ -78,12 +78,7 @@ void Socket::run() {
         while(readPacketsHeader() >= 0) {
             while (this->pendingPacketsCount) {
                 auto res = this->readPacket();
-                if (res.first < 0) {
-                    throw std::runtime_error(std::string("Failed: ") + std::to_string(res.first));
-                }
-
-                //todo check if peer did not close connection timeout or sth
-                if(res.first == 0) {
+                if(errno == EWOULDBLOCK || errno == EAGAIN){
                     Logger::log("error occurred while reading a packet!", LEVEL::ERROR);
                     throw std::system_error();
                 }
