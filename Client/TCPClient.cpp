@@ -45,7 +45,7 @@ int TCPClient::sendPacket(const std::vector<byte> &data) {
     return this->sendPacket(data.data(), data.size());
 }
 
-int TCPClient::sendPacket(std::string data) {
+int TCPClient::sendPacket(const std::string &data) {
     return this->sendPacket(reinterpret_cast<const byte *>(data.data()), data.size());
 }
 

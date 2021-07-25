@@ -43,7 +43,7 @@ public:
      * sends encoded packet to server
      * @return status code - 0 if success
      */
-    int sendPacket(const std::string data);
+    int sendPacket(const std::string &data);
 
     /**
      * sends encoded packet to server
