@@ -18,6 +18,13 @@ public:
     const int id;
     const in_port_t port;
 
+
+    /**
+     * buffer for new sockets created
+     */
+
+    const size_t BUFFER_SIZE;
+
 private:
     std::mutex mutex;
     sockaddr_in address;
@@ -32,7 +39,7 @@ private:
      * */
     int acceptFirst();
 public:
-    Listener(int id, TCPServer* tcpServer, in_port_t port, u_short clientsPendingCount);
+    Listener(int id, TCPServer *tcpServer, u_short port, u_short clientsPendingCount, size_t BUFFER_SIZE);
     void killListener();
     std::thread * run();
     ~Listener();

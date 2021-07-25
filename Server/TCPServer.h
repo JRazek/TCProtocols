@@ -50,7 +50,7 @@ public:
      * @param socketFileDescriptor
      */
 
-    void notifyAccept(int socketFileDescriptor);
+    void notifyAccept(int listenerID, int socketFileDescriptor);
 
 
     /**
@@ -63,9 +63,11 @@ public:
     virtual void notifyNewPacket(int socketID, std::vector<byte> &data);
 
     /**
-     * inits listeners to run
+     * inits listeners to run,
+     * @param port - port for listening
+     * @param new sockets created on accept will have that buffer size.
      */
-    void addListener(in_port_t port);
+    void addListener(in_port_t port, size_t BUFFER_SIZE);
 
 
     /**

@@ -12,7 +12,8 @@
 
 struct TCPServer;
 
-Listener::Listener(int id, TCPServer* tcpServer, u_short port, u_short clientsPendingCount):id(id), port(port) {
+Listener::Listener(int id, TCPServer *tcpServer, u_short port, u_short clientsPendingCount, size_t BUFFER_SIZE)
+        : id(id), port(port), BUFFER_SIZE(BUFFER_SIZE) {
     this->tcpServer = tcpServer;
     this->clientsPendingCount = clientsPendingCount;
     this->listenerFileDescriptor = -1;
@@ -78,7 +79,7 @@ std::thread * Listener::run() {
                 ip_addr.s_addr = ip;
                 std::string ipStr = inet_ntoa(ip_addr);
                 Logger::log("Accepted connection from host " + ipStr, LEVEL::INFO);
-                this->tcpServer->notifyAccept(socketFD);
+                this->tcpServer->notifyAccept(this->id, socketFD);
             }
             return 0;
         }

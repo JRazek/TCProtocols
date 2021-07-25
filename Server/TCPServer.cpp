@@ -35,9 +35,9 @@ TCPServer::~TCPServer() {
     }
 }
 
-void TCPServer::notifyAccept(int socketFileDescriptor) {
+void TCPServer::notifyAccept(int listenerID, int socketFileDescriptor) {
     std::lock_guard guard(this->mutex);
-    Socket * socket = new Socket(this->sockets.size(), socketFileDescriptor, this, 4096);
+    Socket * socket = new Socket(this->sockets.size(), socketFileDescriptor, this, listeners[listenerID]->BUFFER_SIZE);
     this->sockets[socket->id] = socket;
     socket->run();
 }
@@ -56,8 +56,8 @@ std::thread * TCPServer::run() {
     return run;
 }
 
-void TCPServer::addListener(in_port_t port) {
-    Listener *listener = new Listener(this->listeners.size(), this, port, 4);
+void TCPServer::addListener(in_port_t port, size_t BUFFER_SIZE) {
+    Listener *listener = new Listener(this->listeners.size(), this, port, 4, 0);
     this->listeners[listener->id] = listener;
 }
 
