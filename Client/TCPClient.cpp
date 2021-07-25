@@ -45,11 +45,14 @@ int TCPClient::sendPacket(const std::vector<byte> &data) {
     return this->sendPacket(data.data(), data.size());
 }
 
+int TCPClient::sendPacket(std::string data) {
+    return this->sendPacket(reinterpret_cast<const byte *>(data.data()), data.size());
+}
+
 void TCPClient::connClose() {
     ::shutdown(sock, SHUT_RDWR);
     close(sock);
 }
-
 
 int TCPClient::sendPacketsMetaData(u_short packetsCount){
     byte *metaData = TransferObjectData::encodeDataLength(packetsCount);
@@ -63,6 +66,3 @@ int TCPClient::sendDataRaw(const byte *data, u_int64_t dataSize) {
     return send(sock, data, dataSize, 0);
 }
 
-int TCPClient::sendPacket(std::string data) {
-    return this->sendPacket(reinterpret_cast<const byte *>(data.data()), data.size());
-}
