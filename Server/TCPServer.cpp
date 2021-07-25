@@ -64,4 +64,10 @@ void TCPServer::addListener(in_port_t port) {
 void TCPServer::notifyNewPacket(int socketID, std::vector<byte> &data) {
     //override it
     Logger::log("received new packet from socket " + std::to_string(socketID), LEVEL::INFO);
+    std::string  dataString = "";
+    for(auto c : data){
+        dataString += c;
+    }
+    Logger::log("content of message " + dataString, LEVEL::INFO);
+
 }
