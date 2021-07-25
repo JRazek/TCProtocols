@@ -41,10 +41,10 @@ int main(){
    // client1.sendPacket(bytes);
 
 
-    TCPClient client1("10.0.0.9", PORT);
-    client1.connect();
-    client1.sendPacketsMetaData(1);
-    client1.sendPacket("debil");
+//    TCPClient client1("10.0.0.9", PORT);
+//    client1.connect();
+//    client1.sendPacketsMetaData(1);
+//    client1.sendPacket("debil");
 
     std::this_thread::sleep_for (std::chrono::microseconds (10000000000000l));
     serverRunnable->join();
