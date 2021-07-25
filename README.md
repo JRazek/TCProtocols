@@ -9,8 +9,7 @@ After the successful handshake. Listener creates new thread with socket responsi
 Data is passed in following format - <br/>
 first 8 bytes specifies the number of packets that are going to be sent.<br/>
 bytes are encoded in decreasing order - first byte is most significant.<br/>
-
-after this socket is will be expecting n specified packets of data.<br/>
+After this socket will be expecting n specified packets of data.<br/>
 Each packet starts with 8 bytes including the length(bytes) of the packet sent.<br/>
 Same encoding as with the packet count.<br/>
 
