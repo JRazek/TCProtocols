@@ -57,7 +57,7 @@ std::thread * TCPServer::run() {
 }
 
 void TCPServer::addListener(in_port_t port, size_t BUFFER_SIZE) {
-    Listener *listener = new Listener(this->listeners.size(), this, port, 4, 0);
+    Listener *listener = new Listener(this->listeners.size(), this, port, 4, BUFFER_SIZE);
     this->listeners[listener->id] = listener;
 }
 
