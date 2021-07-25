@@ -18,7 +18,7 @@ typedef unsigned char byte;
 
 class TCPServer {
 private:
-
+    friend class Listener;
     std::mutex mutex;
 
     std::unordered_map<int, Socket *> sockets;//id, val
