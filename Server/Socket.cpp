@@ -87,7 +87,7 @@ void Socket::run() {
                     throw std::system_error();
                 }
 
-                Logger::log("here4" + res.first, LEVEL::WARNING);
+                Logger::log("here4" + std::to_string(res.first), LEVEL::WARNING);
                 if(res.first > 0){
                     this->tcpServer->notifyNewPacket(this->id, res.second);
                 }
