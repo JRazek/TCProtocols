@@ -51,7 +51,14 @@ public:
     void notifyAccept(int socketFileDescriptor);
 
 
-    void notifyNewPacket(int socketID, std::vector<byte> &data);
+    /**
+     * this is the function that is called whenever the new packet from any socket comes. By default its empty.
+     * Can be overridden as needed
+     * @param socketID socket which sent the data
+     * @param data - byte array incoming from connection
+     */
+
+    virtual void notifyNewPacket(int socketID, std::vector<byte> &data);
 
     /**
      * inits listeners to run
@@ -70,11 +77,11 @@ public:
     */
    ~TCPServer();
 
-/**
- *
- * @return sockets count
- */
-int socketsCount();
+    /**
+     *
+     * @return sockets count
+     */
+    int socketsCount();
 };
 
 
