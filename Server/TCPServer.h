@@ -28,14 +28,6 @@ private:
 
     std::condition_variable serverDoneCondition;
 
-    /**
-     *
-     * @param socketID
-     * kills the socket.
-     * @return 0 on success
-     */
-
-    int killSocket(int socketID);
 
 
     /**
@@ -45,7 +37,7 @@ private:
 
     void notifyAccept(int listenerID, int socketFileDescriptor);
 
-
+protected:
     /**
      * this is the function that is called whenever the new packet from any socket comes. By default its empty.
      * Can be overridden as needed
@@ -55,6 +47,14 @@ private:
 
     virtual void notifyNewPacket(int socketID, std::vector<byte> &data);
 
+    /**
+     *
+     * @param socketID
+     * kills the socket.
+     * @return 0 on success
+     */
+
+    int killSocket(int socketID);
 
 public:
 
