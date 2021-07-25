@@ -9,4 +9,7 @@ add_executable(TEST main.cpp main.cpp)
 
 target_link_libraries(TEST TCProtocols)
 
+#install(DIRECTORY ./build/ DESTINATION /home/user/installCmakeTest
+#        FILES_MATCHING PATTERN "*.a")
+
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
