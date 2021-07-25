@@ -51,26 +51,22 @@ std::pair<int, std::vector<byte>> Socket::readPacket() {
             dataReceived += packet;
             requestedData = BUFFER_SIZE < (expectedDataSize - dataReceived) ? BUFFER_SIZE : expectedDataSize - dataReceived;
             if (packet < 1) {
-                Logger::log("here2", LEVEL::WARNING);
+               // Logger::log("here2", LEVEL::WARNING);
                 return {packet, {}};
             }
             bytesVector.insert(bytesVector.end(), buffer, buffer + packet);
-            Logger::log("incoming " + std::to_string(packet), LEVEL::WARNING);
-            for(auto it = buffer; it != buffer + packet; ++it){
-                std::string s = std::string(buffer, buffer + packet);
-                Logger::log(s, LEVEL::WARNING);
-            }
+
             if (!requestedData) {
-                Logger::log("here1", LEVEL::WARNING);
+                //Logger::log("here1", LEVEL::WARNING);
                 //E of data wanted. ok
                 break;
             }
         }
         this->pendingPacketsCount --;
-        Logger::log("here5", LEVEL::WARNING);
+        //Logger::log("here5", LEVEL::WARNING);
         return {0, bytesVector};
     }
-    Logger::log("here3", LEVEL::WARNING);
+    //Logger::log("here3", LEVEL::WARNING);
     return {-1, {}};
 }
 
@@ -93,9 +89,10 @@ void Socket::run() {
                     throw std::system_error();
                 }
 
-                Logger::log("here4 " + std::to_string(res.first), LEVEL::WARNING);
-                if(res.first > 0){
+                if(res.first == 0){
                     this->tcpServer->notifyNewPacket(this->id, res.second);
+                }else{
+                    Logger::log("here4 " + std::to_string(res.first), LEVEL::WARNING);
                 }
 
             }
