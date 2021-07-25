@@ -55,7 +55,11 @@ std::pair<int, std::vector<byte>> Socket::readPacket() {
                 return {packet, {}};
             }
             bytesVector.insert(bytesVector.end(), buffer, buffer + packet);
-            Logger::log("incoming" + std::to_string(packet), LEVEL::WARNING);
+            Logger::log("incoming " + std::to_string(packet), LEVEL::WARNING);
+            for(auto it = buffer; it != buffer + packet; ++it){
+                std::string s = std::string(buffer, buffer + packet);
+                Logger::log(s, LEVEL::WARNING);
+            }
             if (!requestedData) {
                 Logger::log("here1", LEVEL::WARNING);
                 //E of data wanted. ok
