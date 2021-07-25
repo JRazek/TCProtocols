@@ -47,7 +47,7 @@ std::pair<int, std::vector<byte>> Socket::readPacket() {
         u_int64_t requestedData = BUFFER_SIZE < expectedDataSize - dataReceived ? BUFFER_SIZE : expectedDataSize;
 
         byte buffer[this->BUFFER_SIZE];
-        while (int packet = recv(socketFileDescriptor, &buffer, requestedData, 0)) {
+        while (int packet = recv(socketFileDescriptor, &buffer, requestedData, MSG_WAITALL)) {
             dataReceived += packet;
             requestedData = BUFFER_SIZE < (expectedDataSize - dataReceived) ? BUFFER_SIZE : expectedDataSize - dataReceived;
             if (packet < 1) {
@@ -85,7 +85,7 @@ void Socket::run() {
             while (this->pendingPacketsCount) {
                 auto res = this->readPacket();
                 if(errno == EWOULDBLOCK || errno == EAGAIN){
-                    Logger::log("error occurred while reading a packet!", LEVEL::ERROR);
+                    Logger::log("error occurred while reading a packet!" + std::to_string(errno), LEVEL::ERROR);
                     throw std::system_error();
                 }
 

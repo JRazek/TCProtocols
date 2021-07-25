@@ -11,6 +11,7 @@ std::mutex Logger::mutex;
 void Logger::log(std::string message, LEVEL level) {
     std::lock_guard guard(Logger::mutex);
 
+    std::cout<<"["<<level<<"] ";
 
     if(level == LEVEL::ERROR){
         std::cout<<"\033[1;31m" + message + "\033[0m\n";
