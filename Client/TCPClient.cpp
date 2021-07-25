@@ -46,6 +46,7 @@ int TCPClient::sendPacket(const std::vector<byte> &data) {
 }
 
 void TCPClient::connClose() {
+    ::shutdown(sock, SHUT_RDWR);
     close(sock);
 }
 

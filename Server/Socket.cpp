@@ -23,14 +23,12 @@ int Socket::readPacketsHeader() {
         int status = read(socketFileDescriptor, expectedPacketsMetaData, sizeof(expectedPacketsMetaData));
         this->pendingPacketsCount = TransferObjectData::decodeDataLength(expectedPacketsMetaData);
 
-        if(status < 0){
-            perror("");
-            return status;
+        if(status <= 0){
+            perror("header");
         }
-    } else{
-        return -2;
+        return status;
     }
-    return 0;
+    return -1;
 }
 
 std::pair<int, std::vector<byte>> Socket::readPacket() {
@@ -75,7 +73,7 @@ void Socket::shutdown() {
 
 void Socket::run() {
     std::thread receiveThread([this] (){
-        while(readPacketsHeader() >= 0) {
+        while(readPacketsHeader() > 0) {
             while (this->pendingPacketsCount) {
                 auto res = this->readPacket();
                 if(errno == EWOULDBLOCK || errno == EAGAIN){
