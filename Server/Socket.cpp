@@ -23,7 +23,7 @@ int Socket::readPacketsHeader() {
         int status = read(socketFileDescriptor, expectedPacketsMetaData, sizeof(expectedPacketsMetaData));
         this->pendingPacketsCount = TransferObjectData::decodeDataLength(expectedPacketsMetaData);
 
-        if(status <= 0){
+        if(status < 0){
             perror("header");
         }
         return status;
@@ -50,11 +50,14 @@ std::pair<int, std::vector<byte>> Socket::readPacket() {
         while (int packet = recv(socketFileDescriptor, &buffer, requestedData, 0)) {
             dataReceived += packet;
             requestedData = BUFFER_SIZE < (expectedDataSize - dataReceived) ? BUFFER_SIZE : expectedDataSize - dataReceived;
-            if (packet < 1)
-                break;
+            if (packet < 1) {
+                return {packet, {}};
+            }
             bytesVector.insert(bytesVector.end(), buffer, buffer + packet);
-            if (!requestedData)
+            if (!requestedData) {
+                //E of data wanted. ok
                 break;
+            }
         }
         this->pendingPacketsCount --;
         return {0, bytesVector};
