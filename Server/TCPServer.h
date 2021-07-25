@@ -37,14 +37,6 @@ private:
     int killSocket(int socketID);
 
 
-public:
-
-    /**
-     * init
-     * */
-
-    TCPServer();
-
     /**
      * accessed from other threads. Must be secure.
      * @param socketFileDescriptor
@@ -61,6 +53,15 @@ public:
      */
 
     virtual void notifyNewPacket(int socketID, std::vector<byte> &data);
+
+
+public:
+
+    /**
+     * init
+     * */
+
+    TCPServer();
 
     /**
      * inits listeners to run,
