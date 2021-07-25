@@ -51,10 +51,12 @@ std::pair<int, std::vector<byte>> Socket::readPacket() {
             dataReceived += packet;
             requestedData = BUFFER_SIZE < (expectedDataSize - dataReceived) ? BUFFER_SIZE : expectedDataSize - dataReceived;
             if (packet < 1) {
+                Logger::log("here2", LEVEL::WARNING);
                 return {packet, {}};
             }
             bytesVector.insert(bytesVector.end(), buffer, buffer + packet);
             if (!requestedData) {
+                Logger::log("here1", LEVEL::WARNING);
                 //E of data wanted. ok
                 break;
             }
@@ -62,6 +64,7 @@ std::pair<int, std::vector<byte>> Socket::readPacket() {
         this->pendingPacketsCount --;
         return {0, bytesVector};
     }
+    Logger::log("here3", LEVEL::WARNING);
     return {-1, {}};
 }
 
@@ -83,7 +86,12 @@ void Socket::run() {
                     Logger::log("error occurred while reading a packet!", LEVEL::ERROR);
                     throw std::system_error();
                 }
-                this->tcpServer->notifyNewPacket(this->id, res.second);
+
+                Logger::log("here4" + res.first, LEVEL::WARNING);
+                if(res.first > 0){
+                    this->tcpServer->notifyNewPacket(this->id, res.second);
+                }
+
             }
         }
     });
