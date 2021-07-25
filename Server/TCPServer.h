@@ -33,6 +33,7 @@ private:
      * kills the socket.
      * @return 0 on success
      */
+
     int killSocket(int socketID);
 
 
@@ -41,6 +42,7 @@ public:
     /**
      * init
      * */
+
     TCPServer();
 
     /**
@@ -69,18 +71,21 @@ public:
     /**
      * runs the server
      */
+
     std::thread * run();
 
 
    /**
     * destructor, manages all the dynamic data
     */
+
    ~TCPServer();
 
     /**
      *
      * @return sockets count
      */
+
     int socketsCount();
 };
 
