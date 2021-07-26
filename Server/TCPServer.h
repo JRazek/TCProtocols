@@ -22,8 +22,10 @@ private:
     friend class Socket;
     std::mutex mutex;
 
+    int currSocketID;
     std::unordered_map<int, Socket *> sockets;//id, val
 
+    int currListenerID;
     std::unordered_map<int, Listener *> listeners;//id, val
 
     std::condition_variable serverDoneCondition;
@@ -46,6 +48,11 @@ protected:
      */
 
     virtual void notifyNewPacket(int socketID, std::vector<byte> &data);
+
+    virtual void notifyDataIncomplete(int socketID, std::vector<byte> &incompleteData);
+
+
+    virtual void notifySocketDone(int socketID);
 
     /**
      *

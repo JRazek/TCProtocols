@@ -41,7 +41,7 @@ public:
      * unbinds socket, kills all the streams and prepare for deletion
      * @return
      */
-    ~Socket();
+    virtual ~Socket();
 
 
     void run();

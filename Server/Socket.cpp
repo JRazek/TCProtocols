@@ -51,26 +51,25 @@ std::pair<int, std::vector<byte>> Socket::readPacket() {
             dataReceived += packet;
             requestedData = BUFFER_SIZE < (expectedDataSize - dataReceived) ? BUFFER_SIZE : expectedDataSize - dataReceived;
             if (packet < 1) {
-               // Logger::log("here2", LEVEL::WARNING);
                 return {packet, {}};
             }
             bytesVector.insert(bytesVector.end(), buffer, buffer + packet);
 
             if (!requestedData) {
-                //Logger::log("here1", LEVEL::WARNING);
                 //E of data wanted. ok
                 break;
             }
         }
         this->pendingPacketsCount --;
-        //Logger::log("here5", LEVEL::WARNING);
         if(expectedDataSize == dataReceived)
             return {0, bytesVector};
+        else{
+            //client sending uncomplete data
+            return {-5, bytesVector};
+        }
 
-
-        return {-1, {}};
     }
-    //Logger::log("here3", LEVEL::WARNING);
+
     return {-1, {}};
 }
 
@@ -95,12 +94,15 @@ void Socket::run() {
 
                 if(res.first == 0){
                     this->tcpServer->notifyNewPacket(this->id, res.second);
+                }else if(res.first == -5){
+                    this->tcpServer->notifyDataIncomplete(this->id, res.second);
                 }else{
                     Logger::log("here4 " + std::to_string(res.first), LEVEL::WARNING);
                 }
 
             }
         }
+        this->tcpServer->notifySocketDone(this->id);
     });
     receiveThread.detach();
 }
