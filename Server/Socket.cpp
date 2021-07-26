@@ -64,7 +64,11 @@ std::pair<int, std::vector<byte>> Socket::readPacket() {
         }
         this->pendingPacketsCount --;
         //Logger::log("here5", LEVEL::WARNING);
-        return {0, bytesVector};
+        if(expectedDataSize == requestedData)
+            return {0, bytesVector};
+
+
+        return {-1, {}};
     }
     //Logger::log("here3", LEVEL::WARNING);
     return {-1, {}};
